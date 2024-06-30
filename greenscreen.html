@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Hello Greenscreen!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="description" content="Your Fiendly Picture Editor">
+    <meta name="keywords" content="Picture Editor">
+    <meta name="author" content="Pakbung Pimnara">
+
+    <style>
+        * {
+            font-family: monospace;
+            color: Black;
+            }
+
+        body{
+        font-size: 15px;
+        }
+
+        #fg, #bg {
+        border: 1px solid black;
+        width: 500px;
+        height: auto;
+        overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+  <h1>Your personal Greenscreen editor</h1>
+  <p>Be careful on the size of foreground and background pictures, they should be *the same size*</p>
+  <canvas id="fg"></canvas>
+  <canvas id="bg"></canvas>
+  <br><br>
+    <p>
+      Select a foreground with Greenscreen:
+    <input type="file" id="fgfile" multiple="false" accept="image/*"> <input type="button" value="Upload foreground" onclick="drawFg()">
+    </p>
+  
+    <p>
+      Select a background:
+    <input type="file" id="bgfile" multiple="false" accept="image/*"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="Upload background" onclick="drawBg()">
+    </p>
+  
+    <p>
+      <input type="button" value="Edit your picture" onclick="editPic()">
+    </p>
+
+
+    <script>
+        // reader
+        var reader
+        var img
+
+        // canvas
+        var canFg;
+        var ctxFg;
+
+        var canBg;
+        var ctxBg;
+
+        // image
+        var fgImg;
+        var bgImg;
+
+        function drawFg() {
+        fgImg = document.getElementById("fgfile").files[0];
+
+        if (!fgImg) {
+            return;  // Handle case where no file is selected
+        }
+
+        reader = new FileReader();
+        reader.onload = function(event) {
+        img = new Image();
+        img.onload = function() {
+        canFg = document.getElementById("fg");
+        canFg.width = img.naturalWidth;
+        canFg.height = img.naturalHeight;
+        ctxFg = canFg.getContext("2d");
+        ctxFg.drawImage(img, 0, 0);
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(fgImg);
+        }
+
+
+        function drawBg() {
+        bgImg = document.getElementById("bgfile").files[0];
+
+        if (!bgImg) {
+            return;  // Handle case where no file is selected
+        }
+
+        reader = new FileReader();
+        reader.onload = function(event) {
+        img = new Image();
+        img.onload = function() {
+        canBg = document.getElementById("bg");
+        canBg.width = img.naturalWidth;
+        canBg.height = img.naturalHeight;
+        ctxBg = canBg.getContext("2d");
+        ctxBg.drawImage(img, 0, 0);
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(bgImg);
+        }
+
+
+        function doEdit(){
+        var res= checkUpload();
+        if (res == true){
+            editPic();
+        }
+        }
+
+
+        function checkUpload() {
+        if ((fgImg.complete() || fgImg != null) || (bgImg.complete() || bgImg != null)){
+            return true;
+        }
+        return false;
+        }
+
+
+        function editPic() {
+        var imgDataFg = ctxFg.getImageData(0, 0, canFg.width, canFg.height);
+        var imgDataBg = ctxBg.getImageData(0, 0, canBg.width, canBg.height);
+        
+        // invert colors
+        for (let i = 0; i < imgDataFg.data.length; i += 4) {
+            var red = imgDataFg.data[i];
+            var green = imgDataFg.data[i+1];
+            var blue = imgDataFg.data[i+2];
+            
+            if (green > red + blue){
+            imgDataFg.data[i] = imgDataBg.data[i];
+            imgDataFg.data[i+1] = imgDataBg.data[i+1];
+            imgDataFg.data[i+2] = imgDataBg.data[i+2];
+            }
+        }
+        ctxFg.putImageData(imgDataFg, 0, 0);
+        ctxBg.clearRect(0, 0, canBg.width, canBg.height); // and clear canBg
+            };
+    </script>
+</body>
+</html>
