@@ -1,0 +1,387 @@
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Hello Filter!</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta charset="UTF-8">
+            <meta name="keywords" content="Picture Editor">
+            <meta name="author" content="Pakbung Pimnara">
+        </head>
+        
+        <script src="https://www.dukelearntoprogram.com/course1/common/js/image/SimpleImage.js
+        ">
+        </script>
+        
+        <body>
+
+        <script>
+            var Img;
+            var inputfile;
+            var res1;
+            var res2;
+            var canvas;
+            var ctx;
+            var red;
+            var green;
+            var blue;
+            var avg;
+
+
+            function uploadPic(){
+                inputfile = document.getElementById("myfile");
+                Img = new SimpleImage(inputfile);
+                
+                canvas = document.getElementById("canvas");
+                Img.drawTo(canvas);
+            }
+
+            function isCanvasBlank(){
+                var blank = document.createElement("canvas");
+                canvas = document.getElementById("canvas");
+
+                blank.width = canvas.width;
+                blank.height = canvas.height;
+
+                return canvas.toDataURL() === blank.toDataURL();
+            }
+
+            function checkUpload() {
+            if (Img.complete() || Img != null) {
+                return true;
+            }
+            return false;
+            }
+
+            function updateStatus(){
+            res = checkUpload();
+            if (res == true){
+                var item = document.getElementById("ele2");
+                item.className = "showStatus";
+            } else {
+                alert("No picture downloaded")
+            }
+            }
+
+            function clearImg() {
+                canvas = document.getElementById("canvas");
+                ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+            function resetImg(){
+            Img = new SimpleImage(inputfile);
+            canvas = document.getElementById("canvas");
+            Img.drawTo(canvas);
+            }
+
+            function makeGray(){
+                res1 = checkUpload();
+                res2 = isCanvasBlank();
+                if (res1 == true && res2 == false){
+                    for (var p of Img.values()){
+                        red = p.getRed();
+                        green = p.getGreen();
+                        blue = p.getBlue();
+                        avg = (red+green+blue)/3;
+
+                        p.setRed(avg);
+                        p.setGreen(avg);
+                        p.setBlue(avg);
+                    }
+                canvas = document.getElementById("canvas");
+                Img.drawTo(canvas);
+            }
+            }
+
+            function filterSet1(para1, para2, para3){
+                for (var p of Img.values()){
+                    red = p.getRed();
+                    green = p.getGreen();
+                    blue = p.getBlue();
+                    
+                    red = (255-red)*para1;
+                    green = (255-green)*para2;
+                    blue= (255-blue)*para3;
+
+                    p.setRed(red);
+                    p.setGreen(green);
+                    p.setBlue(blue); 
+                }
+            canvas = document.getElementById("canvas");
+            Img.drawTo(canvas);
+            }
+
+            function blossom(){
+                res1 = checkUpload();
+                res2 = isCanvasBlank();
+                if (res1 == true && res2 == false){
+                    filterSet1(1.1, 1.2, 1);
+                    filterSet1(1.2, 0.95, 1.2);
+                }
+            }
+
+            function untilDawn(){
+                res1 = checkUpload();
+                res2 = isCanvasBlank();
+                if (res1 == true && res2 == false){
+                    filterSet1(1.2, 0.95, 1.2);
+                    filterSet1(1.2, 1.2, 1.5);
+                }
+            }
+
+            function sunset(){
+                res1 = checkUpload();
+                res2 = isCanvasBlank();
+                if (res1 == true && res2 == false){
+                    filterSet1(1.1, 0.95, 1.5);
+                    filterSet1(1.2, 1, 1.5);
+                }
+            }
+
+            function midnight(){
+                res1 = checkUpload();
+                res2 = isCanvasBlank();
+                if (res1 == true && res2 == false){
+                    filterSet1(1.5, 1, 1);
+                    filterSet1(1.5, 1, 1);
+                }
+            }
+
+            function greenForest(){
+                res1 = checkUpload();
+                res2 = isCanvasBlank();
+                if (res1 == true && res2 == false){
+                    filterSet1(1.5, 1, 1);
+                    filterSet1(1.5, 1, 1);
+                    filterSet1(1.2, 0.95, 1.2);
+                    filterSet1(1.2, 1.2, 1.5);
+                }
+            }
+
+            function rainbow(multiR1, multiG1, multiB1, multiR2, multiG2, multiB2, R2, G2, B2){
+                res1 = checkUpload();
+                res2 = isCanvasBlank();
+                if (res1 == true && res2 == false){
+                    for (var p of Img.values()){
+                    red = p.getRed();
+                    green = p.getGreen();
+                    blue = p.getBlue();
+                    avg = (red+green+blue)/3;
+                    
+                    if (avg<128){
+                        red = multiR1*avg;
+                        green = multiG1*avg;
+                        blue = multiB1*avg;
+                    } else {
+                        red = (multiR2*avg) + R2;
+                        green = (multiG2*avg) + G2;
+                        blue = (multiB2*avg) + B2;
+                    }
+                    p.setRed(red);
+                    p.setGreen(green);
+                    p.setBlue(blue); 
+                    }
+                }
+                canvas = document.getElementById("canvas");
+                Img.drawTo(canvas);
+                }
+                
+            function makeRed(){
+            rainbow(2, 0, 0, 0, 2, 2, 255, -255, -255);
+            }
+
+            function makeOrange(){
+            rainbow(2, 0.8, 0, 0, 1.2, 2, 255, -51, -255);
+            }
+
+            function makeYellow(){
+            rainbow(2, 2, 0, 0, 0, 2, 255, 255, -255);
+            }
+
+            function makeGreen(){
+            rainbow(0, 2, 0, 2, 0, 2, -255, 255, -255);
+            }
+
+            function makeBlue(){
+            rainbow(0, 0, 2, 2, 2, 0, -255, -255, 255);
+            }
+
+            function makeViolet(){
+            rainbow(0.8, 0, 2, 1.2, 2, 0, -51, -255, 255);
+            }
+
+            function genericPride(p, multiR1, multiG1, multiB1, multiR2, multiG2, multiB2, R2, G2, B2){
+                red = p.getRed();
+                green = p.getGreen();
+                blue = p.getBlue();
+                avg = (red+green+blue)/3;
+            
+                if (avg<128){
+                    red = multiR1*avg;
+                    green = multiG1*avg;
+                    blue = multiB1*avg;
+                } else {
+                    red = (multiR2*avg) + R2;
+                    green = (multiG2*avg) + G2;
+                    blue = (multiB2*avg) + B2;
+                }        
+                }
+
+
+            function pride() {
+                res1 = checkUpload();
+                res2 = isCanvasBlank();
+
+                if (res1 == true && res2 == false) {
+                    var H = Img.getHeight();
+                    level0 = 0;
+                    level1 = H/6;
+                    level2 = H * (1/3);
+                    level3 = H/2;
+                    level4 = H * (2/3);
+                    level5 = H * (5/6);
+
+                    for (var p of Img.values()){
+                        var y = p.getY();
+                        if (y >= level0 && y < level1){
+                            genericPride(p, 0.8, 0, 2, 1.2, 2, 0, -51, -255, 255); // violet
+                        } else if (y >= level1 && y < level2){
+                            genericPride(p, 0, 0, 2, 2, 2, 0, -255, -255, 255); // blue
+                        } else if (y >= level2 && y < level3){
+                            genericPride(p, 0, 2, 0, 2, 0, 2, -255, 255, -255); // green
+                        } else if (y >= level3 && y < level4){
+                            genericPride(p, 2, 2, 0, 0, 0, 2, 255, 255, -255); // yellow
+                        } else if (y >= level4 && y < level5){
+                            genericPride(p, 2, 0.8, 0, 0, 1.2, 2, 255, -51, -255); // orange
+                        } else {
+                            genericPride(p, 2, 0, 0, 0, 2, 2, 255, -255, -255); // red;
+                        }
+                        
+                        p.setRed(red);
+                        p.setGreen(green);
+                        p.setBlue(blue); 
+                    }
+                    canvas = document.getElementById("canvas");
+                    Img.drawTo(canvas);
+                    }
+                }
+        </script>
+
+        <style>
+            * {
+            font-family: monospace;
+            color: Black;
+            }
+
+            body{
+            font-size: 15px;
+            }
+
+            canvas {
+            border: 1px solid black;
+            width: 500px;
+            height: auto;
+            overflow: hidden;
+            }
+
+            .column {
+            float: left;
+            padding: 10px;
+            }
+
+
+            .col1 {
+            width: 50%;
+            }
+
+            .col2 {
+            width: 25%;
+            }
+
+            .col3 {
+            padding: 0px;
+            margin-top: 11px;
+            }
+
+
+            .row:after {
+            content: "";
+            display: table;
+            clear: both;
+            }
+
+
+            #ele1 {
+                display: inline-block;
+                margin-right: 3px;
+            }
+
+            .hideStatus {
+            display: none;
+            }
+
+            .showStatus {
+            display: inline-block;
+            }
+        </style>
+
+        <h1>Online Photo Filters: Make Your Images Go Awesome</h1>
+          <br>
+          <div class="row">
+            <div class="column col1">
+              <canvas id="canvas"></canvas>
+              <p>
+                Select a file:
+              <input type="file" id="myfile" multiple="false" accept="image/*">
+              </p>
+              <p id="ele1">
+                <input type="button" value="Upload File" onclick="uploadPic(); updateStatus();">
+              </p>
+              <p id="ele2" class="hideStatus">Picture downloaded</p>
+            </div>
+        
+            <div class="column col2">
+              <input type="button" value="Reset Image" onclick="resetImg()">
+              <br><br>
+              <input type="button" value="Clear Canvas" onclick="clearImg()">
+              <br><br>
+              <input type="button" value="Grayscale" onclick="makeGray()">
+              <br><br>
+              <input type="button" value="X-Ray 1" onclick="filterSet1(1.1, 1.2, 1)">
+              <br><br>
+              <input type="button" value="X-Ray 2" onclick="filterSet1(1.2, 0.95, 1.2)">
+              <br><br>
+              <input type="button" value="X-Ray 3" onclick="filterSet1(1.2, 1.2, 1.5)">
+              <br><br>
+              <input type="button" value="Blossom" onclick="blossom()">
+              <br><br>
+              <input type="button" value="Until Dawn" onclick="untilDawn()">
+              <br><br>
+              <input type="button" value="Sunset" onclick="sunset()">
+              <br><br>
+              <input type="button" value="Midnight" onclick="midnight()">
+              <br><br>
+              <input type="button" value="Green Forest" onclick="greenForest()">
+            </div>
+            
+            <div class="column col3">
+              <input type="button" value="Make Red" onclick="makeRed()">
+              <br><br>
+              <input type="button" value="Make Orange" onclick="makeOrange()">
+              <br><br>
+              <input type="button" value="Make Yellow" onclick="makeYellow()">
+              <br><br>
+              <input type="button" value="Make Green" onclick="makeGreen()">
+              <br><br>
+              <input type="button" value="Make Blue" onclick="makeBlue()">
+              <br><br>
+              <input type="button" value="Make Violet" onclick="makeViolet()">
+              <br><br>
+              <input type="button" value="Happy Pride!" onclick="pride()">
+            </div>
+            
+          </div>
+        </body>
+</html>
